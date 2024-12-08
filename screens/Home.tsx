@@ -7,17 +7,29 @@ import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
 const DATA = [
   {
     title: "First Item",
-    isChecked: true,
+    isDone: true,
+    uuid: "1",
+    description: "This is a description",
   },
   {
     title: "Second Item",
     isChecked: false,
+    isDone: true,
+    uuid: "2",
+    description: "This is a description",
   },
 ];
 
 export const Home = () => {
   const renderItem = ({ item }: ListRenderItemInfo<TaskProps>) => {
-    return <Task isChecked={true} title={item.title} />;
+    return (
+      <Task
+        isDone={item.isDone}
+        title={item.title}
+        uuid={item.uuid}
+        description={item.description}
+      />
+    );
   };
 
   return (
