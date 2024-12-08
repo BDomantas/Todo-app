@@ -1,23 +1,21 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import Checkbox from "expo-checkbox";
-import { useState } from "react";
 
-interface TaskProps {
+export interface TaskProps {
   isChecked?: boolean;
+  title: string;
 }
 
-export const Task = ({}: TaskProps) => {
-  const [isChecked, setChecked] = useState(false);
-
+export const Task = ({ isChecked, title }: TaskProps) => {
   return (
     <Pressable style={styles.container}>
       <Checkbox
         style={styles.checkbox}
         value={isChecked}
-        onValueChange={setChecked}
+        onValueChange={() => {}}
         color={isChecked ? "#4630EB" : undefined}
       />
-      <Text style={isChecked && styles.doneText}>This is a task</Text>
+      <Text style={[styles.text, isChecked && styles.doneText]}>{title}</Text>
     </Pressable>
   );
 };
@@ -35,5 +33,8 @@ const styles = StyleSheet.create({
   },
   checkbox: {
     margin: 8,
+  },
+  text: {
+    flex: 1,
   },
 });
