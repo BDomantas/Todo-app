@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 import { Task, TaskProps } from "../components/Task";
 
 import { FlashList, ListRenderItemInfo } from "@shopify/flash-list";
+import { useTaskStore } from "../store/useTaskStore";
 
 const DATA = [
   {
@@ -21,6 +22,8 @@ const DATA = [
 ];
 
 export const Home = () => {
+  const { tasks } = useTaskStore();
+
   const renderItem = ({ item }: ListRenderItemInfo<TaskProps>) => {
     return (
       <Task
@@ -35,7 +38,7 @@ export const Home = () => {
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
-      <FlashList data={DATA} renderItem={renderItem} estimatedItemSize={100} />
+      <FlashList data={tasks} renderItem={renderItem} estimatedItemSize={100} />
     </View>
   );
 };
