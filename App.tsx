@@ -1,6 +1,7 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { Home } from "./screens/Home";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const Stack = createNativeStackNavigator();
 
@@ -15,7 +16,9 @@ const RootStack = () => {
 export default function App() {
   return (
     <NavigationContainer>
-      <RootStack />
+      <GestureHandlerRootView>
+        <RootStack />
+      </GestureHandlerRootView>
     </NavigationContainer>
   );
 }
