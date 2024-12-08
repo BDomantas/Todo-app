@@ -9,39 +9,38 @@ import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
-import { useCallback, useRef } from "react";
-import { NewTaskForm } from "../components/NewTaskForm";
-
-const DATA = [
-  {
-    title: "First Item",
-    isDone: true,
-    uuid: "1",
-    description: "This is a description",
-  },
-  {
-    title: "Second Item",
-    isChecked: false,
-    isDone: true,
-    uuid: "2",
-    description: "This is a description",
-  },
-];
+import { JSX, useCallback, useEffect, useRef } from "react";
+import { TaskForm } from "../components/TaskForm";
+import { BottomSheetDefaultBackdropProps } from "@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types";
 
 export const Home = () => {
-  const { tasks } = useTaskStore();
+  const { tasks, editingTask, setEditingTask } = useTaskStore();
 
   const bottomSheetRef = useRef<BottomSheet>(null);
 
-  // callbacks
-  const handleSheetChanges = useCallback((index: number) => {
-    console.log("handleSheetChanges", index);
-  }, []);
+  const handleSheetChanges = useCallback(
+    (index: number) => {
+      if (index === -1) {
+        setEditingTask(null);
+      }
+    },
+    [setEditingTask]
+  );
 
   const openBottomSheet = useCallback(() => {
     bottomSheetRef.current?.expand();
-    console.log("openBottomSheet");
   }, []);
+
+  const onNewTask = useCallback(() => {
+    setEditingTask(null);
+    openBottomSheet();
+  }, [openBottomSheet]);
+
+  useEffect(() => {
+    if (editingTask) {
+      openBottomSheet();
+    }
+  }, [editingTask, openBottomSheet]);
 
   const renderItem = ({ item }: ListRenderItemInfo<TaskProps>) => {
     return (
@@ -54,15 +53,8 @@ export const Home = () => {
     );
   };
 
-  const renderHeader = () => {
-    return (
-      <ListHeaderControls onNewTask={openBottomSheet} onFilter={() => {}} />
-    );
-  };
-
-  // renders
   const renderBackdrop = useCallback(
-    (props) => (
+    (props: JSX.IntrinsicAttributes & BottomSheetDefaultBackdropProps) => (
       <BottomSheetBackdrop
         {...props}
         disappearsOnIndex={-1}
@@ -75,13 +67,18 @@ export const Home = () => {
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
-      <FlashList
-        data={tasks}
-        renderItem={renderItem}
-        estimatedItemSize={100}
-        keyExtractor={(item) => item.uuid}
-        ListHeaderComponent={renderHeader}
-      />
+      <View style={styles.list}>
+        <ListHeaderControls onNewTask={onNewTask} onFilter={() => {}} />
+
+        <FlashList
+          data={tasks}
+          renderItem={renderItem}
+          estimatedItemSize={100}
+          keyExtractor={(item) => item.uuid}
+        />
+      </View>
+
+      {/* Would separate this to "New task" and "Edit task" bottom sheets in more complex scenarios, but for this simple case I believe this is fine  */}
       <BottomSheet
         ref={bottomSheetRef}
         enableDynamicSizing={true}
@@ -93,7 +90,7 @@ export const Home = () => {
         index={-1}
       >
         <BottomSheetView style={styles.contentContainer}>
-          <NewTaskForm />
+          <TaskForm />
         </BottomSheetView>
       </BottomSheet>
     </View>
@@ -112,5 +109,8 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 36,
     alignItems: "center",
+  },
+  list: {
+    flex: 1,
   },
 });

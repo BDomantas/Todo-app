@@ -2,6 +2,7 @@ import { Button, View, StyleSheet } from "react-native";
 
 interface ListHeaderControlsProps {
   onNewTask: () => void;
+  // TODO: add picker for filter
   onFilter: () => void;
 }
 
@@ -11,8 +12,8 @@ export const ListHeaderControls = ({
 }: ListHeaderControlsProps) => {
   return (
     <View style={styles.container}>
-      <Button title="New Task" onPress={onNewTask} />
       <Button title="Filter" onPress={onFilter} />
+      <Button title="New Task" onPress={onNewTask} />
     </View>
   );
 };
@@ -20,5 +21,6 @@ export const ListHeaderControls = ({
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
+    justifyContent: "space-between",
   },
 });

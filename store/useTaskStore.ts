@@ -7,13 +7,19 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface TaskStoreState {
   tasks: TaskState[];
+  editingTask: string | null;
 }
 
 interface TaskStoreActions {
   addTask: (title: string, description: string) => void;
-  completeTask: (uuid: string) => void;
+  changeTaskStatus: (uuid: string, status: boolean) => void;
   deleteTask: (uuid: string) => void;
-  updateTask: (uuid: string, title?: string, description?: string) => void;
+  updateTaskDetails: (
+    uuid: string,
+    title?: string,
+    description?: string
+  ) => void;
+  setEditingTask: (uuid: string | null) => void;
 }
 
 export const useTaskStore = create<TaskStoreState & TaskStoreActions>()(
@@ -21,19 +27,25 @@ export const useTaskStore = create<TaskStoreState & TaskStoreActions>()(
     persist(
       immer((set) => ({
         tasks: [],
+        editingTask: null,
+        setEditingTask: (uuid: string | null) => {
+          set((state) => ({
+            editingTask: uuid,
+          }));
+        },
         addTask: (title: string, description: string) => {
           const uuid = Crypto.randomUUID();
           set((state) => ({
             tasks: [
-              ...state.tasks,
               { uuid, title, description, isDone: false },
+              ...state.tasks,
             ],
           }));
         },
-        completeTask: (uuid: string) => {
+        changeTaskStatus: (uuid: string, status: boolean) => {
           set((state) => ({
             tasks: state.tasks.map((task) =>
-              task.uuid === uuid ? { ...task, isDone: true } : task
+              task.uuid === uuid ? { ...task, isDone: status } : task
             ),
           }));
         },
@@ -42,7 +54,11 @@ export const useTaskStore = create<TaskStoreState & TaskStoreActions>()(
             tasks: state.tasks.filter((task) => task.uuid !== uuid),
           }));
         },
-        updateTask: (uuid: string, title?: string, description?: string) => {
+        updateTaskDetails: (
+          uuid: string,
+          title?: string,
+          description?: string
+        ) => {
           set((state) => ({
             tasks: state.tasks.map((task) =>
               task.uuid === uuid
